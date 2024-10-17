@@ -2,6 +2,15 @@
 
 A Janet client library for interfacing with Tile38.
 
+## Installation
+
+The library can be installed with `jpm` using `jpm install https://github.com/rokf/janet-tile38`
+or by adding the following line into your project's dependency tuple:
+
+```janet
+{ :url "https://github.com/rokf/janet-tile38" :tag "main" }
+```
+
 ## API
 
 After the library is installed you should be able to import its `tile38`
