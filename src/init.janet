@@ -40,7 +40,7 @@
 (make-command jset "Set a value in a JSON document")
 (make-command keys "Finds all keys matching the given pattern")
 (make-command nearby "Searches for IDs that are nearby a point")
-(make-command output "Gets or sets the output format for the current connection") # @TODO add JSON decoding
+(make-command output "Gets or sets the output format for the current connection") # @TODO add JSON decoding?
 (make-command pdel "Removes all objects matching a pattern")
 (make-command pdelchan "Removes all channels matching a pattern")
 (make-command pdelhook "Removes all hooks matching a pattern")
@@ -73,7 +73,8 @@
   [&opt host port pass]
   (default host "127.0.0.1")
   (default port 9851)
-  (default pass nil) # @TODO add authentication
+  (default pass nil)
   (def conn (net/connect host (string port) :stream))
+  (if pass (:write conn (resp/encode ["auth" pass])))
   {:send (fn [self command] (:write conn (resp/encode command)) (first (resp/decode (:read conn 1024))))
    :close (fn [self] (net/close conn))})
