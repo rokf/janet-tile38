@@ -72,8 +72,8 @@
   "Creates a new Tile38 client"
   [&opt host port pass]
   (default host "127.0.0.1")
-  (default port "9851")
+  (default port 9851)
   (default pass nil) # @TODO add authentication
-  (def conn (net/connect host port :stream))
+  (def conn (net/connect host (string port) :stream))
   {:send (fn [self command] (:write conn (resp/encode command)) (first (resp/decode (:read conn 1024))))
    :close (fn [self] (net/close conn))})
