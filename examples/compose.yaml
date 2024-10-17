@@ -1,0 +1,7 @@
+services:
+  tile38:
+    image: tile38/tile38
+    volumes:
+      - ./data:/data:rw
+    entrypoint: tile38-server -h localhost -p 9851 -d /data
+    network_mode: host
