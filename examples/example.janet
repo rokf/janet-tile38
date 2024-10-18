@@ -4,6 +4,7 @@
 (def client (tile38/make-client))
 (pp (tile38/ping client))
 (pp (tile38/ping client 500))
+(pp (tile38/close client))
 
 # the password can be sent as a command before those that require
 # authentication

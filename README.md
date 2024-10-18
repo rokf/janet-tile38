@@ -44,6 +44,14 @@ they're following the pattern below:
 Some commands don't take any arguments. In those cases you'd only have to pass
 in the client.
 
+### `tile38/close`
+
+Closes the underlying connection stream.
+
+```janet
+(tile38/close client)
+```
+
 ## Examples
 
 Usage examples can be found in the `examples` folder. The folder also contains

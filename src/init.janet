@@ -78,3 +78,8 @@
   (if pass (:write conn (resp/encode ["auth" pass])))
   {:send (fn [self command] (:write conn (resp/encode command)) (first (resp/decode (:read conn 1024))))
    :close (fn [self] (net/close conn))})
+
+(defn close
+  "Closes the connection on the client"
+  [client]
+  (:close client))
