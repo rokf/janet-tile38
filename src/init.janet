@@ -77,9 +77,43 @@
   (def conn (net/connect host (string port) :stream))
   (if pass (:write conn (resp/encode ["auth" pass])))
   {:send (fn [self command] (:write conn (resp/encode command)) (first (resp/decode (:read conn 1024))))
-   :close (fn [self] (net/close conn))})
+   :close (fn [self] (net/close conn))
+   :watch (fn [self ch stop-ch &opt timeout]
+            (default timeout 0.5)
+            (var events nil)
+            (var stop false)
+            (forever
+              (if stop (break))
+              (try
+                (do
+                  # could probably use ev/count here instead and close the
+                  # stop channel from the inside, but then I can't
+                  # reuse it for multiple watchers
+                  (ev/with-deadline timeout (do
+                                              (def select-res (ev/select stop-ch))
+                                              (if (= (first select-res) :close)
+                                                (set stop true)))))
+                ([err]
+                  (do
+                    (if (not= err "deadline expired") (error err))
+                    (try
+                      (do
+                        (set events (:read conn 1024 nil timeout))
+                        (if (not (nil? events)) (do
+                                                  (def events-decoded (resp/decode events))
+                                                  (each event events-decoded (do
+                                                                               (def select-res (ev/select [ch event]))
+                                                                               (if (= (first select-res) :close) (do (set stop true) (break))))))))
+                      ([e] (do
+                             (if (not= e "timeout") (error e))))))))))})
 
 (defn close
   "Closes the connection on the client"
   [client]
   (:close client))
+
+(defn watch
+  "Watches for events and passes them into the received channel. Stops when either of the two channels is closed."
+  [client event-ch stop-ch &opt timeout]
+  (default timeout 0.5)
+  (:watch client event-ch stop-ch timeout))

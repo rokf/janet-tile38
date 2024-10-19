@@ -52,6 +52,23 @@ Closes the underlying connection stream.
 (tile38/close client)
 ```
 
+### `tile38/watch`
+
+Waits for events (notifications) to appear in subscribed channels, decodes them
+and pushes them into an event channel, which you have to pass as an argument
+(`event-ch`). Exits cleanly if the `stop-ch` channel is closed using something
+like `(ev/chan-close stop-ch)` from the standard library. The interval for
+`stop-ch` state checks and reading from the client's internal Tile38 connection
+can be configured using the optional `timeout` parameter, which defaults to
+`0.5`, meaning half a second. By default it will wait for half a second each
+loop iteration for the `stop-ch` channel to get closed and then it will try
+to read from the connection for half a second, before going back to the `stop-ch`
+check.
+
+```janet
+(tile38/watch client event-ch stop-ch &opt timeout)
+```
+
 ## Examples
 
 Usage examples can be found in the `examples` folder. The folder also contains
